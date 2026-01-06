@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sistema de Emissão de RIDs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Firebase (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+
+<body class="min-h-screen bg-gray-100">
+
+  <!-- ================= TELA INICIAL ================= -->
+  <section
+    id="home"
+    class="min-h-screen flex flex-col items-center justify-center text-center px-4"
+  >
+    <img
+      src="https://th.bing.com/th/id/R.65cf039c1a761f9ab3e86014c8428574?rik=rHlKpfKgwYkrrQ&pid=ImgRaw&r=0"
+      alt="Logo"
+      class="w-24 md:w-28 mb-3"
+    />
+
+    <h1 class="text-xl md:text-2xl font-bold text-gray-800 mb-10">
+      Sistema de emissão de RIDs
+    </h1>
+
+    <button
+      onclick="mostrarFormulario()"
+      class="px-10 py-4 bg-blue-600 text-white font-bold rounded-xl text-lg hover:opacity-90 transition"
+    >
+      EMITIR NOVO RID
+    </button>
+  </section>
+
+  <!-- ================= FORMULÁRIO ================= -->
+  <section
+    id="formulario"
+    class="hidden min-h-screen p-4 md:p-8"
+  >
+    <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-8">
+
+      <h2 class="text-2xl font-bold mb-6 text-center">
+        Nova RID
+      </h2>
+
+      <form id="ridForm" class="space-y-4">
+
+        <!-- Emitente fixo -->
+        <div>
+          <label class="font-bold">Emitente</label>
+          <input
+            value="VISITANTE/TERCEIRO"
+            readonly
+            class="w-full border p-3 rounded-lg font-bold text-center bg-gray-100"
+          />
+        </div>
+
+        <!-- Tipo de contrato -->
+        <div>
+          <label class="font-bold">Tipo de contrato</label>
+          <select name="contractType" required class="w-full border p-3 rounded-lg">
+            <option value="">Selecione</option>
+            <option>Funcionário</option>
+            <option>Terceiro Contratado</option>
+            <option>Terceiro Eventual</option>
+            <option>Visitante</option>
+          </select>
+        </div>
+
+        <!-- Unidade -->
+        <div>
+          <label class="font-bold">Unidade</label>
+          <input name="unit" required class="w-full border p-3 rounded-lg" />
+        </div>
+
+        <!-- Data -->
+        <div>
+          <label class="font-bold">Data</label>
+          <input type="date" name="date" required class="w-full border p-3 rounded-lg" />
+        </div>
+
+        <!-- Incidente -->
+        <div>
+          <label class="font-bold">Incidente ou Desvio</label>
+          <select name="incidentType" required class="w-full border p-3 rounded-lg">
+            <option>Condição de Risco</option>
+            <option>Desvio Comportamental</option>
+            <option>Dano Material</option>
+            <option>Quase acidente</option>
+          </select>
+        </div>
+
+        <!-- Origem -->
+        <div>
+          <label class="font-bold">Origem da detecção</label>
+          <select name="detectionOrigin" required class="w-full border p-3 rounded-lg">
+            <option>CSL</option>
+            <option>Inspeção programada</option>
+            <option>Inspeção não programada</option>
+            <option>Observação Comportamental</option>
+            <option>Constatação espontânea</option>
+            <option>Auditoria</option>
+          </select>
+        </div>
+
+        <!-- Local -->
+        <div>
+          <label class="font-bold">Local da ocorrência</label>
+          <input name="location" required class="w-full border p-3 rounded-lg" />
+        </div>
+
+        <!-- Descrição -->
+        <div>
+          <label class="font-bold">Descrição da ocorrência</label>
+          <textarea name="description" required class="w-full border p-3 rounded-lg"></textarea>
+        </div>
+
+        <!-- Classificação -->
+        <div>
+          <label class="font-bold">Classificação de risco</label>
+          <select name="riskClassification" required class="w-full border p-3 rounded-lg">
+            <option>BAIXO</option>
+            <option>MÉDIO</option>
+            <option>ALTO</option>
+            <option>CRÍTICO</option>
+          </select>
+        </div>
+
+        <!-- Ação imediata -->
+        <div>
+          <label class="font-bold">Ação imediata</label>
+          <textarea name="immediateAction" class="w-full border p-3 rounded-lg"></textarea>
+        </div>
+
+        <!-- Status -->
+        <div>
+          <label class="font-bold">Status</label>
+          <select name="status" required class="w-full border p-3 rounded-lg">
+            <option>CORRIGIDO</option>
+            <option>VENCIDO</option>
+          </select>
+        </div>
+
+        <!-- Botões -->
+        <div class="flex flex-col md:flex-row gap-4 pt-4">
+          <button
+            type="submit"
+            class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold hover:opacity-90 transition"
+          >
+            ENVIAR RID
+          </button>
+
+          <button
+            type="button"
+            onclick="voltarHome()"
+            class="flex-1 bg-gray-300 py-3 rounded-xl font-bold hover:bg-gray-400 transition"
+          >
+            CANCELAR
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
