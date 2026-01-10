@@ -32,25 +32,34 @@ ridForm.addEventListener("submit", async (e) => {
   try {
     const f = e.target;
 
+    // 🔥 garante que status sempre exista
+    const statusValue = f.status?.value || "PENDENTE";
+    const immediateActionValue = f.immediateAction?.value || "";
+
     await db.collection("rids").add({
-      // 👇 IDENTIFICAÇÃO PÚBLICA
+      // 🔹 Identificação pública
       emitterId: "PUBLICO",
       emitterName: "VISITANTE/TERCEIRO",
       emitterCpf: "N/A",
 
-      // 👇 DADOS DO FORMULÁRIO
+      // 🔹 Dados do formulário
       contractType: f.contractType.value,
-      unit: f.unit.value,
+      unit: f.unit.value.toUpperCase(),
       emissionDate: firebase.firestore.Timestamp.fromDate(new Date(f.date.value)),
       incidentType: f.incidentType.value,
       detectionOrigin: f.detectionOrigin.value,
       location: f.location.value,
       description: f.description.value,
       riskClassification: f.riskClassification.value,
-      immediateAction: f.immediateAction.value,
-      status: f.status.value,
 
-      // 👇 CONTROLE
+      // 🔥 Campos garantidos
+      immediateAction: immediateActionValue,
+      status: statusValue,
+
+      // 🔹 Marca como RID pública
+      isPublic: true,
+      publicSource: "SITE_PUBLICO",
+
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
