@@ -36,32 +36,55 @@ ridForm.addEventListener("submit", async (e) => {
     const statusValue = f.status?.value || "PENDENTE";
     const immediateActionValue = f.immediateAction?.value || "";
 
-    await db.collection("rids").add({
-      // 🔹 Identificação pública
-      emitterId: "PUBLICO",
-      emitterName: "VISITANTE/TERCEIRO",
-      emitterCpf: "N/A",
+    // ================= RID NUMBER (contador) =================
+const counterRef = db.collection("counters").doc("rids");
 
-      // 🔹 Dados do formulário
-      contractType: f.contractType.value,
-      unit: f.unit.value.toUpperCase(),
-      emissionDate: firebase.firestore.Timestamp.fromDate(new Date(f.date.value)),
-      incidentType: f.incidentType.value,
-      detectionOrigin: f.detectionOrigin.value,
-      location: f.location.value,
-      description: f.description.value,
-      riskClassification: f.riskClassification.value,
+let ridNumber = null;
 
-      // 🔥 Campos garantidos
-      immediateAction: immediateActionValue,
-      status: statusValue,
+await db.runTransaction(async (tx) => {
+  const snap = await tx.get(counterRef);
+const current = snap.exists ? (snap.data().lastNumber || 0) : 0;
+const next = current + 1;
 
-      // 🔹 Marca como RID pública
-      isPublic: true,
-      publicSource: "SITE_PUBLICO",
+// grava no MESMO campo que o privado usa
+tx.set(counterRef, { lastNumber: next }, { merge: true });
 
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+ridNumber = String(next).padStart(5, "0");
+
+});
+
+
+ await db.collection("rids").add({
+  // 🔒 Identidade pública controlada
+  emitterId: "PUBLIC",
+  emitterName: "VISITANTE/TERCEIRO",
+  emitterCpf: "00000000000",
+  ridNumber,
+
+  // 📄 Campos iguais ao site privado
+  contractType: f.contractType.value,
+  unit: f.unit.value.toUpperCase(),
+
+  emissionDate: firebase.firestore.Timestamp.fromDate(
+    new Date(f.date.value)
+  ),
+
+  incidentType: f.incidentType.value,
+  detectionOrigin: f.detectionOrigin.value,
+  location: f.location.value,
+  description: f.description.value,
+  riskClassification: f.riskClassification.value,
+  immediateAction: immediateActionValue,
+
+  status: f.status.value, // VENCIDO ou CORRIGIDO
+
+  // 🔔 Worker
+  emailSent: false,
+
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
+
+
 
     alert("RID enviada com sucesso!");
     voltarHome();
